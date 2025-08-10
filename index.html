@@ -1,50 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>File Upload to Webhook</title>
+    <title>Webhook Test</title>
 </head>
 <body>
-  <h2>Upload a File</h2>
-  <form id="uploadForm">
-    <input type="file" id="fileInput" name="file" required>
-    <button type="submit">Upload</button>
-  </form>
+    <h1>Send Data to Make.com Webhook</h1>
+    <form id="webhookForm">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
 
-  <p id="status"></p>
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
 
-  <script>
-    const webhookURL = https://hook.eu2.make.com/o926iypws38d9xkbeekatzk43iy5vlbf; 
+        <button type="submit">Send to Webhook</button>
+    </form>
 
-    document.getElementById("uploadForm").addEventListener("submit", async (event) => {
-      event.preventDefault();
+    <p id="response"></p>
 
-      const fileInput = document.getElementById("fileInput");
-      const file = fileInput.files[0];
+    <script>
+        document.getElementById("webhookForm").addEventListener("submit", function(e) {
+            e.preventDefault();
 
-      if (!file) {
-        document.getElementById("status").textContent = "Please select a file.";
-        return;
-      }
+            const data = {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value
+            };
 
-      const formData = new FormData();
-      formData.append("file", file);
-
-      try {
-        const response = await fetch(webhookURL, {
-          method: "POST",
-          body: formData
+            fetch("https://hook.eu2.make.com/o926iypws38d9xkbeekatzk43iy5vlbf", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById("response").innerText = "✅ Data sent successfully!";
+                } else {
+                    document.getElementById("response").innerText = "❌ Failed to send data.";
+                }
+            })
+            .catch(error => {
+                document.getElementById("response").innerText = "⚠️ Error: " + error;
+            });
         });
-
-        if (response.ok) {
-          document.getElementById("status").textContent = "File uploaded successfully!";
-        } else {
-          document.getElementById("status").textContent = "Upload failed.";
-        }
-      } catch (error) {
-        document.getElementById("status").textContent = "Error: " + error;
-      }
-    });
-  </script>
+    </script>
 </body>
 </html>
